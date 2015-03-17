@@ -1,5 +1,4 @@
-#include <glew.h>
-#include <gl.h>
+#include <epoxy/gl.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -235,10 +234,7 @@ int main(int argc, char* argv[]) {
   main_context = SDL_GL_CreateContext(main_window);
   CHECK_SDL_ERROR;
 
-  glewExperimental = GL_TRUE;
-  if(glewInit() != GLEW_OK) {
-    sdl_bailout("Failed to initialize GLEW");
-  }
+  printf("[INFO] libepoxy says GL version is %d\n", epoxy_gl_version());
 
   GLint gl_major_version;
   GLint gl_minor_version;
