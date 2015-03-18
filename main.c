@@ -14,6 +14,7 @@
 #include <assert.h>
 
 #define MAX_SHADER_SIZE (16 * 1024)
+GLfloat vec_up[3] = {0.0f, 1.0f, 0.0f};
 
 void sdl_bailout(const char* msg) {
   printf("[ERROR] %s: %s\n", SDL_GetError(), msg);
@@ -164,6 +165,81 @@ void mat_mul4(GLfloat* mat1, GLfloat* mat2) {
   }
 }
 
+void cross_product3(GLfloat* u, GLfloat* v) {
+  GLfloat uxv[3];
+  uxv[0] = u[1] * v[2] - u[2] * v[1];
+  uxv[1] = u[2] * v[0] - u[0] * v[2];
+  uxv[2] = u[0] * v[1] - u[1] * v[0];
+  memcpy(u, uxv, sizeof(uxv));
+}
+
+void mul_vector3(GLfloat* v, GLfloat scalar) {
+  v[0] *= scalar;
+  v[1] *= scalar;
+  v[2] *= scalar;
+}
+
+void add_vector3(GLfloat* u, GLfloat* v) {
+  u[0] += v[0];
+  u[1] += v[1];
+  u[2] += v[2];
+}
+
+void normalize3(GLfloat* v) {
+  GLfloat len = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  v[0] = v[0] / len;
+  v[1] = v[1] / len;
+  v[2] = v[2] / len;
+}
+
+void set_identity4(GLfloat* mat) {
+  memset(mat, 0, sizeof(GLfloat) * 16);
+  mat[0] = 1.0f;
+  mat[5] = 1.0f;
+  mat[10] = 1.0f;
+  mat[15] = 1.0f;
+}
+
+void set_lookat(GLfloat* lookat,
+		GLfloat* camera_location,
+		GLfloat* camera_right,
+		GLfloat* camera_up,
+		GLfloat* camera_look) {
+  set_identity4(lookat);
+  lookat[3] = -camera_location[0];
+  lookat[7] = -camera_location[1];
+  lookat[11] = -camera_location[2];
+  GLfloat mat[16];
+  set_identity4(mat);
+  memcpy(mat, camera_right, sizeof(GLfloat) * 3);
+  memcpy(mat + 4, camera_up, sizeof(GLfloat) * 3);
+  memcpy(mat + 8, camera_look, sizeof(GLfloat) * 3);
+
+  mat_mul4(mat, lookat);
+  memcpy(lookat, mat, sizeof(mat));
+}
+
+void set_camera_vectors(GLfloat* camera_location,
+			GLfloat* camera_target,
+			GLfloat* camera_look,
+			GLfloat* camera_right,
+			GLfloat* camera_up) {
+  if(camera_location && camera_target) {
+    camera_look[0] = camera_location[0] - camera_target[0];
+    camera_look[1] = camera_location[1] - camera_target[1];
+    camera_look[2] = camera_location[2] - camera_target[2];
+    normalize3(camera_look);
+  }
+
+  memcpy(camera_right, vec_up, sizeof(GLfloat) * 3);
+  cross_product3(camera_right, camera_look);
+  normalize3(camera_right);
+
+  memcpy(camera_up, camera_look, sizeof(GLfloat) * 3);
+  cross_product3(camera_up, camera_right);
+  normalize3(camera_up);
+}
+
 int float_eq(GLfloat f1, GLfloat f2) {
   return fabs(f1 - f2) < 0.00001f;
 }
@@ -175,13 +251,6 @@ int main(int argc, char* argv[]) {
     1.0f, 2.0f, 3.0f, 4.0f,
     1.0f, 2.0f, 3.0f, 4.0f
   };
-
-  /*GLfloat mat2[] = {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
-  };*/
 
   GLfloat mat2[] = {
     4.0f, 3.0f, 2.0f, 1.0f,
@@ -317,19 +386,48 @@ int main(int argc, char* argv[]) {
   glBindVertexArray(0);
 
 
+  GLfloat camera_location[3] = {3.0f, 0.0f, 3.0f};
+  GLfloat camera_target[3] = {0.0f, 0.0f, 0.0f};
+  GLfloat camera_look[3];
+  GLfloat camera_right[3];
+  GLfloat camera_up[3];
+  set_camera_vectors(camera_location,
+		     camera_target,
+		     camera_look,
+		     camera_right,
+		     camera_up);
+
+  assert(float_eq(camera_location[0], 3.0f));
+  assert(float_eq(camera_location[1], 0.0f));
+  assert(float_eq(camera_location[2], 3.0f));
+
+  assert(float_eq(camera_target[0], 0.0f));
+  assert(float_eq(camera_target[1], 0.0f));
+  assert(float_eq(camera_target[2], 0.0f));
+
+  assert(float_eq(camera_look[0], 0.70711f));
+  assert(float_eq(camera_look[1], 0.0f));
+  assert(float_eq(camera_look[2], 0.70711f));
+
+  assert(float_eq(camera_right[0], 0.70711f));
+  assert(float_eq(camera_right[1], 0.0f));
+  assert(float_eq(camera_right[2], -0.70711f));
+
+  assert(float_eq(camera_up[0], 0.0f));
+  assert(float_eq(camera_up[1], 1.0f));
+  assert(float_eq(camera_up[2], 0.0f));
+
+  GLfloat lookat[16];
+  set_lookat(lookat, camera_location, camera_right, camera_up, camera_look);
+
   GLfloat projection[16];
 
-  GLfloat view[] = {
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  };
+  GLfloat* view = lookat;
 
   GLfloat model_base[] = {
     1, 0, 0, 0,
     0, 1, 0, 0,
-    0, 0, 1, -2,
+    0, 0, 1, 0,
     0, 0, 0, 1
     };
 
@@ -342,19 +440,79 @@ int main(int argc, char* argv[]) {
 
   GLfloat model[16];
 
+  GLfloat camera_speed = 0.05f;
+  int moving_forward = 0;
+  int moving_backward = 0;
+  int moving_left = 0;
+  int moving_right = 0;
+
   int done = 0;
   SDL_Event ev;
   while(!done) {
-    if(SDL_PollEvent(&ev)) {
+    while(SDL_PollEvent(&ev)) {
       switch(ev.type) {
       case SDL_KEYUP:
-	if(ev.key.keysym.sym == SDLK_q) {
+	switch(ev.key.keysym.sym) {
+	case SDLK_q:
 	  done = 1;
+	  break;
+	case SDLK_w:
+	  moving_forward = 0;
+	  break;
+	case SDLK_a:
+	  moving_left = 0;
+	  break;
+	case SDLK_s:
+	  moving_backward = 0;
+	  break;
+	case SDLK_d:
+	  moving_right = 0;
+	  break;
+	}
+	break;
+      case SDL_KEYDOWN:
+	switch(ev.key.keysym.sym) {
+	case SDLK_w:
+	  moving_forward = 1;
+	  break;
+	case SDLK_a:
+	  moving_left = 1;
+	  break;
+	case SDLK_s:
+	  moving_backward = 1;
+	  break;
+	case SDLK_d:
+	  moving_right = 1;
+	  break;
 	}
 	break;
       default:
 	break;
       }
+    }
+
+    GLfloat velocity[3];
+    if(moving_forward) {
+      memcpy(velocity, camera_look, sizeof(velocity));
+      //Negate because camera_look faces opposite of camera
+      mul_vector3(velocity, -camera_speed);
+      add_vector3(camera_location, velocity);
+    }
+    if(moving_backward) {
+      memcpy(velocity, camera_look, sizeof(velocity));
+      //Don't negate because camera_look faces opposite of camera
+      mul_vector3(velocity, camera_speed);
+      add_vector3(camera_location, velocity);
+    }
+    if(moving_right) {
+      memcpy(velocity, camera_right, sizeof(velocity));
+      mul_vector3(velocity, camera_speed);
+      add_vector3(camera_location, velocity);
+    }
+    if(moving_left) {
+      memcpy(velocity, camera_right, sizeof(velocity));
+      mul_vector3(velocity, -camera_speed);
+      add_vector3(camera_location, velocity);
     }
     GLint time_uniform_location = glGetUniformLocation(shader_program, "time");
     GLint sampler_uniform_location = glGetUniformLocation(shader_program, "tex");
@@ -383,7 +541,13 @@ int main(int argc, char* argv[]) {
     model_rotation[9] = sin(-angle_rad);
     model_rotation[10] = cos(-angle_rad);
     mat_mul4(model, model_rotation);
-    //model[11] = -2.0f - (2.0f * (sin(SDL_GetTicks() / 500.0f) + 1));
+    set_camera_vectors(NULL,
+		       NULL,
+		       camera_look,
+		       camera_right,
+		       camera_up);
+    set_lookat(lookat, camera_location, camera_right, camera_up, camera_look);
+
     glUniformMatrix4fv(projection_uniform_location,
 		       1,
 		       GL_TRUE,
