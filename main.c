@@ -206,17 +206,17 @@ void set_lookat(GLfloat* lookat,
 		GLfloat* camera_up,
 		GLfloat* camera_look) {
   set_identity4(lookat);
-  lookat[3] = -camera_location[0];
-  lookat[7] = -camera_location[1];
-  lookat[11] = -camera_location[2];
+  memcpy(lookat, camera_right, sizeof(GLfloat) * 3);
+  memcpy(lookat + 4, camera_up, sizeof(GLfloat) * 3);
+  memcpy(lookat + 8, camera_look, sizeof(GLfloat) * 3);
+
   GLfloat mat[16];
   set_identity4(mat);
-  memcpy(mat, camera_right, sizeof(GLfloat) * 3);
-  memcpy(mat + 4, camera_up, sizeof(GLfloat) * 3);
-  memcpy(mat + 8, camera_look, sizeof(GLfloat) * 3);
+  mat[3] = -camera_location[0];
+  mat[7] = -camera_location[1];
+  mat[11] = -camera_location[2];
 
-  mat_mul4(mat, lookat);
-  memcpy(lookat, mat, sizeof(mat));
+  mat_mul4(lookat, mat);
 }
 
 void set_camera_vectors(GLfloat* camera_location,
