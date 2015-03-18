@@ -3,12 +3,11 @@
 
 #include <epoxy/gl.h>
 
+extern GLfloat vec_up[3];
+
 void cross_product3(GLfloat* u, GLfloat* v);
-
 void mul_vector3(GLfloat* v, GLfloat scalar);
-
 void add_vector3(GLfloat* u, GLfloat* v);
-
 void normalize3(GLfloat* v);
 
 #endif

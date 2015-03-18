@@ -10,13 +10,15 @@ void set_projection_matrix(GLfloat* mat,
  * Sets mat1 to mat1 * mat2
  */
 void mat_mul4(GLfloat* mat1, GLfloat* mat2);
-
 void set_identity4(GLfloat* mat);
-
 void set_lookat(GLfloat* lookat,
 		GLfloat* camera_location,
 		GLfloat* camera_right,
 		GLfloat* camera_up,
 		GLfloat* camera_look);
-
+void set_camera_vectors(GLfloat* camera_location,
+			GLfloat* camera_target,
+			GLfloat* camera_look,
+			GLfloat* camera_right,
+			GLfloat* camera_up);
 #endif

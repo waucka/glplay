@@ -13,8 +13,6 @@
 #include <math.h>
 #include <assert.h>
 
-GLfloat vec_up[3] = {0.0f, 1.0f, 0.0f};
-
 #define CLAMP(val, minval, maxval) val = val > maxval ? maxval : (val < minval ? minval : val)
 
 void sdl_bailout(const char* msg) {
@@ -36,28 +34,6 @@ void check_sdl_error_func(const char* file, int line) {
 #else
 #define CHECK_SDL_ERROR
 #endif
-
-
-void set_camera_vectors(GLfloat* camera_location,
-			GLfloat* camera_target,
-			GLfloat* camera_look,
-			GLfloat* camera_right,
-			GLfloat* camera_up) {
-  if(camera_location && camera_target) {
-    camera_look[0] = camera_location[0] - camera_target[0];
-    camera_look[1] = camera_location[1] - camera_target[1];
-    camera_look[2] = camera_location[2] - camera_target[2];
-    normalize3(camera_look);
-  }
-
-  memcpy(camera_right, vec_up, sizeof(GLfloat) * 3);
-  cross_product3(camera_right, camera_look);
-  normalize3(camera_right);
-
-  memcpy(camera_up, camera_look, sizeof(GLfloat) * 3);
-  cross_product3(camera_up, camera_right);
-  normalize3(camera_up);
-}
 
 int float_eq(GLfloat f1, GLfloat f2) {
   return fabs(f1 - f2) < 0.00001f;

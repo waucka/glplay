@@ -3,6 +3,8 @@
 #include <string.h>
 #include <math.h>
 
+GLfloat vec_up[3] = {0.0f, 1.0f, 0.0f};
+
 void cross_product3(GLfloat* u, GLfloat* v) {
   GLfloat uxv[3];
   uxv[0] = u[1] * v[2] - u[2] * v[1];
