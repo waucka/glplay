@@ -16,6 +16,8 @@
 #define MAX_SHADER_SIZE (16 * 1024)
 GLfloat vec_up[3] = {0.0f, 1.0f, 0.0f};
 
+#define CLAMP(val, minval, maxval) val = val > maxval ? maxval : (val < minval ? minval : val)
+
 void sdl_bailout(const char* msg) {
   printf("[ERROR] %s: %s\n", SDL_GetError(), msg);
   SDL_Quit();
@@ -446,6 +448,11 @@ int main(int argc, char* argv[]) {
   int moving_left = 0;
   int moving_right = 0;
 
+  GLfloat yaw = 0;
+  GLfloat pitch = 0;
+
+  int input_grab = 0;
+
   int done = 0;
   SDL_Event ev;
   while(!done) {
@@ -455,6 +462,12 @@ int main(int argc, char* argv[]) {
 	switch(ev.key.keysym.sym) {
 	case SDLK_q:
 	  done = 1;
+	  break;
+	case SDLK_SPACE:
+	  input_grab = !input_grab;
+	  SDL_SetWindowGrab(main_window, input_grab);
+	  SDL_ShowCursor(!input_grab);
+	  SDL_SetRelativeMouseMode(input_grab);
 	  break;
 	case SDLK_w:
 	  moving_forward = 0;
@@ -486,6 +499,24 @@ int main(int argc, char* argv[]) {
 	  break;
 	}
 	break;
+      case SDL_MOUSEMOTION:
+	{
+	  GLfloat xoffset = ev.motion.xrel;
+	  GLfloat yoffset = ev.motion.yrel;
+
+	  GLfloat sensitivity = 0.05f;
+	  xoffset *= sensitivity;
+	  yoffset *= sensitivity;
+
+	  yaw += xoffset;
+	  pitch += yoffset;
+
+	  CLAMP(pitch, -89, 89);
+	  //printf("yaw: %f; pitch: %f\n", yaw, pitch);
+	  camera_look[0] = cos(pitch * M_PI / 180.0f) * cos(yaw * M_PI / 180.0f);
+	  camera_look[1] = sin(pitch * M_PI / 180.0f);
+	  camera_look[2] = cos(pitch * M_PI / 180.0f) * sin(yaw * M_PI / 180.0f);
+	}
       default:
 	break;
       }
