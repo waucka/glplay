@@ -563,7 +563,7 @@ int main(int argc, char* argv[]) {
 
     set_projection_matrix(projection,
 			  640.0f, 480.0f, M_PI_2,
-			  1.0f, 10.0f + 5.0f * (sin(SDL_GetTicks() / 500.0f) + 1));
+			  1.0f, 100.0f);
     GLfloat angle_deg = SDL_GetTicks() / 20.0f;
     GLfloat angle_rad = angle_deg / 180.0f * M_PI;
     memcpy(model, model_base, sizeof(model_base));
