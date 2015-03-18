@@ -504,7 +504,7 @@ int main(int argc, char* argv[]) {
 	  GLfloat xoffset = ev.motion.xrel;
 	  GLfloat yoffset = ev.motion.yrel;
 
-	  GLfloat sensitivity = 0.05f;
+	  GLfloat sensitivity = 0.15f;
 	  xoffset *= sensitivity;
 	  yoffset *= sensitivity;
 
