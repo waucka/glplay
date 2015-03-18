@@ -299,7 +299,7 @@ int main(int argc, char* argv[]) {
 
   main_window = SDL_CreateWindow("glplay",
 				 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-				 640, 480,
+				 1024, 768,
 				 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
   main_context = SDL_GL_CreateContext(main_window);
@@ -320,7 +320,7 @@ int main(int argc, char* argv[]) {
 
   SDL_GL_SetSwapInterval(1);
   glClearColor(0.1, 0.2, 0.2, 1.0);
-  glViewport(0, 0, 640, 480);
+  glViewport(0, 0, 1024, 768);
 
   GLuint vertex_shader = load_shader("vert.glsl", GL_VERTEX_SHADER);
   GLuint fragment_shader = load_shader("frag.glsl", GL_FRAGMENT_SHADER);
@@ -562,7 +562,7 @@ int main(int argc, char* argv[]) {
     glUniform1i(sampler_uniform_location, 0);
 
     set_projection_matrix(projection,
-			  640.0f, 480.0f, M_PI_2,
+			  1024.0f, 768.0f, M_PI_2,
 			  1.0f, 100.0f);
     GLfloat angle_deg = SDL_GetTicks() / 20.0f;
     GLfloat angle_rad = angle_deg / 180.0f * M_PI;
