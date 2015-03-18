@@ -358,6 +358,18 @@ int main(int argc, char* argv[]) {
     1, 2, 3
   };
 
+  GLfloat ground_vertices[] = {
+     5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f, 10.0f,
+     5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f,  0.0f,
+    -5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f,  0.0f,
+    -5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 10.0f
+  };
+
+  GLuint ground_indices[] = {
+    0, 1, 3,
+    1, 2, 3
+  };
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -385,6 +397,30 @@ int main(int argc, char* argv[]) {
   glEnableVertexAttribArray(2);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBindVertexArray(0);
+
+  GLuint ground_tex = upload_texture("stone.png");
+
+  GLuint ground_vbo;
+  glGenBuffers(1, &ground_vbo);
+
+  GLuint ground_ebo;
+  glGenBuffers(1, &ground_ebo);
+
+  GLuint ground_vao;
+  glGenVertexArrays(1, &ground_vao);
+
+  glBindVertexArray(ground_vao);
+  glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(7 * sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ground_ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ground_indices), ground_indices, GL_STATIC_DRAW);
   glBindVertexArray(0);
 
 
@@ -550,6 +586,7 @@ int main(int argc, char* argv[]) {
     GLint projection_uniform_location = glGetUniformLocation(shader_program, "projection");
     GLint view_uniform_location = glGetUniformLocation(shader_program, "view");
     GLint model_uniform_location = glGetUniformLocation(shader_program, "model");
+    GLint pulsate_uniform_location = glGetUniformLocation(shader_program, "pulsate");
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -557,21 +594,11 @@ int main(int argc, char* argv[]) {
 
     glUniform1ui(time_uniform_location, SDL_GetTicks());
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glUniform1i(sampler_uniform_location, 0);
-
     set_projection_matrix(projection,
 			  1024.0f, 768.0f, M_PI_2,
 			  1.0f, 100.0f);
     GLfloat angle_deg = SDL_GetTicks() / 20.0f;
     GLfloat angle_rad = angle_deg / 180.0f * M_PI;
-    memcpy(model, model_base, sizeof(model_base));
-    model_rotation[5] = cos(-angle_rad);
-    model_rotation[6] = -sin(-angle_rad);
-    model_rotation[9] = sin(-angle_rad);
-    model_rotation[10] = cos(-angle_rad);
-    mat_mul4(model, model_rotation);
     set_camera_vectors(NULL,
 		       NULL,
 		       camera_look,
@@ -587,15 +614,48 @@ int main(int argc, char* argv[]) {
 		       1,
 		       GL_TRUE,
 		       view);
+
+    //ground
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, ground_tex);
+    glUniform1i(sampler_uniform_location, 0);
+
+    memcpy(model, model_base, sizeof(model_base));
+    glUniformMatrix4fv(model_uniform_location,
+		       1,
+		       GL_TRUE,
+		       model);
+    glUniform1i(pulsate_uniform_location, 0);
+
+    glBindVertexArray(ground_vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+    memcpy(model, model_base, sizeof(model_base));
+    model_rotation[5] = cos(-angle_rad);
+    model_rotation[6] = -sin(-angle_rad);
+    model_rotation[9] = sin(-angle_rad);
+    model_rotation[10] = cos(-angle_rad);
+    mat_mul4(model, model_rotation);
     glUniformMatrix4fv(model_uniform_location,
 		       1,
 		       GL_TRUE,
 		       model);
 
+    //me
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glUniform1i(sampler_uniform_location, 0);
+    glUniform1i(pulsate_uniform_location, 1);
+
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+
     SDL_GL_SwapWindow(main_window);
   }
 

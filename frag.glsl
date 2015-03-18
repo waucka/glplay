@@ -2,6 +2,7 @@
 
 uniform uint time;
 uniform sampler2D tex;
+uniform bool pulsate;
 
 in vec4 vcolor;
 in vec2 texcoord;
@@ -27,13 +28,16 @@ vec3 hsv2rgb(vec3 c)
 }
 
 void main() {
+  vec3 mixedcolor = vcolor.rgb;
   //color = vec4(1.0f, 0.5f, 0.25f, 1.0f);
-  float factor = ((cos(time / 500.0f) + 1.0f) / 2.0f);
-  vec3 hsv = rgb2hsv(vcolor.rgb);
-  //hsv.r = clamp(hsv.r + factor, 0.0f, 1.0f);
-  //hsv.g *= factor;
-  hsv.b *= factor;
-  vec3 mixedcolor = hsv2rgb(hsv);
+  if(pulsate) {
+    float factor = ((cos(time / 500.0f) + 1.0f) / 2.0f);
+    vec3 hsv = rgb2hsv(vcolor.rgb);
+    //hsv.r = clamp(hsv.r + factor, 0.0f, 1.0f);
+    //hsv.g *= factor;
+    hsv.b *= factor;
+    mixedcolor = hsv2rgb(hsv);
+  }
 
   vec4 texcolor = texture(tex, vec2(texcoord.s, 1.0f - texcoord.t));
   //color = texcolor;
