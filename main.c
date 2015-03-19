@@ -386,13 +386,17 @@ int main(int argc, char* argv[]) {
     GLint projection_uniform_location = glGetUniformLocation(shader_program, "projection");
     GLint view_uniform_location = glGetUniformLocation(shader_program, "view");
     GLint model_uniform_location = glGetUniformLocation(shader_program, "model");
-    GLint pulsate_uniform_location = glGetUniformLocation(shader_program, "pulsate");
+    GLint ambient_uniform_location = glGetUniformLocation(shader_program, "ambient_light");
 
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shader_program);
 
     glUniform1ui(time_uniform_location, SDL_GetTicks());
+    glUniform3f(ambient_uniform_location,
+		0.01f,
+		0.01f,
+		0.01f);
 
     set_projection_matrix(projection,
 			  1024.0f, 768.0f, M_PI_2,
@@ -425,7 +429,6 @@ int main(int argc, char* argv[]) {
 		       1,
 		       GL_TRUE,
 		       model);
-    glUniform1i(pulsate_uniform_location, 0);
 
     glBindVertexArray(ground_vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -449,7 +452,6 @@ int main(int argc, char* argv[]) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, tex);
     glUniform1i(sampler_uniform_location, 0);
-    glUniform1i(pulsate_uniform_location, 1);
 
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
