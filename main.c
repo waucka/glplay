@@ -147,10 +147,10 @@ int main(int argc, char* argv[]) {
   glUseProgram(shader_program);
 
   vertex_data_t vertices[] = {
-    {0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f, 1.0f,   1.0f, 1.0f},
-    {0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f, 1.0f,   1.0f, 0.0f},
-    {-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f, 1.0f,   0.0f, 0.0f},
-    {-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 1.0f}
+    { 0.5f,  0.5f, 0.0f,   1.0f, 1.0f},
+    { 0.5f, -0.5f, 0.0f,   1.0f, 0.0f},
+    {-0.5f, -0.5f, 0.0f,   0.0f, 0.0f},
+    {-0.5f,  0.5f, 0.0f,   0.0f, 1.0f}
   };
 
   GLuint indices[] = {
@@ -159,10 +159,10 @@ int main(int argc, char* argv[]) {
   };
 
   vertex_data_t ground_vertices[] = {
-    {5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f, 10.0f},
-    {5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f,  0.0f},
-    {-5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f,  0.0f},
-    {-5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 10.0f}
+    { 5.0f, -1.0f,  5.0f,     10.0f, 10.0f},
+    { 5.0f, -1.0f, -5.0f,     10.0f,  0.0f},
+    {-5.0f, -1.0f, -5.0f,      0.0f,  0.0f},
+    {-5.0f, -1.0f,  5.0f,      0.0f, 10.0f}
   };
 
   GLuint ground_indices[] = {
@@ -189,12 +189,10 @@ int main(int argc, char* argv[]) {
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)(3 *  sizeof(GLfloat)));
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(7 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   glBindVertexArray(0);
@@ -213,12 +211,10 @@ int main(int argc, char* argv[]) {
   glBindVertexArray(ground_vao);
   glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(ground_vertices), ground_vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)(3 *  sizeof(GLfloat)));
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(7 * sizeof(GLfloat)));
-  glEnableVertexAttribArray(2);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ground_ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ground_indices), ground_indices, GL_STATIC_DRAW);
   glBindVertexArray(0);
@@ -394,9 +390,9 @@ int main(int argc, char* argv[]) {
 
     glUniform1ui(time_uniform_location, SDL_GetTicks());
     glUniform3f(ambient_uniform_location,
-		0.01f,
-		0.01f,
-		0.01f);
+		1.0f,
+		1.0f,
+		1.0f);
 
     set_projection_matrix(projection,
 			  1024.0f, 768.0f, M_PI_2,
