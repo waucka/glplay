@@ -16,6 +16,10 @@ typedef struct {
 
   GLfloat s;
   GLfloat t;
+
+  GLfloat nx;
+  GLfloat ny;
+  GLfloat nz;
 } vertex_data_t;
 
 #endif

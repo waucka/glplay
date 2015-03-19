@@ -114,6 +114,7 @@ int main(int argc, char* argv[]) {
   SDL_GL_SetSwapInterval(1);
   glClearColor(0.1, 0.2, 0.2, 1.0);
   glViewport(0, 0, 1024, 768);
+  glEnable(GL_DEPTH_TEST);
 
   GLint vertex_shader = load_shader("vert.glsl", GL_VERTEX_SHADER);
   GLint fragment_shader = load_shader("frag.glsl", GL_FRAGMENT_SHADER);
@@ -147,22 +148,62 @@ int main(int argc, char* argv[]) {
   glUseProgram(shader_program);
 
   vertex_data_t vertices[] = {
-    { 0.5f,  0.5f, 0.0f,   1.0f, 1.0f},
-    { 0.5f, -0.5f, 0.0f,   1.0f, 0.0f},
-    {-0.5f, -0.5f, 0.0f,   0.0f, 0.0f},
-    {-0.5f,  0.5f, 0.0f,   0.0f, 1.0f}
+    { 0.5f,  0.5f, -0.5f,   0.0f, 1.0f,    0.0f,  0.0f, -1.0f},
+    { 0.5f, -0.5f, -0.5f,   0.0f, 0.0f,    0.0f,  0.0f, -1.0f},
+    {-0.5f, -0.5f, -0.5f,   1.0f, 0.0f,    0.0f,  0.0f, -1.0f},
+    {-0.5f,  0.5f, -0.5f,   1.0f, 1.0f,    0.0f,  0.0f, -1.0f},
+
+    { 0.5f,  0.5f,  0.5f,   1.0f, 1.0f,    0.0f,  0.0f,  1.0f},
+    { 0.5f, -0.5f,  0.5f,   1.0f, 0.0f,    0.0f,  0.0f,  1.0f},
+    {-0.5f, -0.5f,  0.5f,   0.0f, 0.0f,    0.0f,  0.0f,  1.0f},
+    {-0.5f,  0.5f,  0.5f,   0.0f, 1.0f,    0.0f,  0.0f,  1.0f},
+
+    { 0.5f,  0.5f, -0.5f,   1.0f, 1.0f,    1.0f,  0.0f,  0.0f},
+    { 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,    1.0f,  0.0f,  0.0f},
+    { 0.5f, -0.5f,  0.5f,   0.0f, 0.0f,    1.0f,  0.0f,  0.0f},
+    { 0.5f,  0.5f,  0.5f,   0.0f, 1.0f,    1.0f,  0.0f,  0.0f},
+
+    {-0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   -1.0f,  0.0f,  0.0f},
+    {-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   -1.0f,  0.0f,  0.0f},
+    {-0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   -1.0f,  0.0f,  0.0f},
+    {-0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   -1.0f,  0.0f,  0.0f},
+
+    { 0.5f, -0.5f, -0.5f,   1.0f, 0.0f,    0.0f, -1.0f,  0.0f},
+    {-0.5f, -0.5f, -0.5f,   0.0f, 0.0f,    0.0f, -1.0f,  0.0f},
+    {-0.5f, -0.5f,  0.5f,   0.0f, 1.0f,    0.0f, -1.0f,  0.0f},
+    { 0.5f, -0.5f,  0.5f,   1.0f, 1.0f,    0.0f, -1.0f,  0.0f},
+
+    { 0.5f, 0.5f,  -0.5f,   0.0f, 0.0f,    0.0f,  1.0f,  0.0f},
+    {-0.5f, 0.5f,  -0.5f,   1.0f, 0.0f,    0.0f,  1.0f,  0.0f},
+    {-0.5f, 0.5f,   0.5f,   1.0f, 1.0f,    0.0f,  1.0f,  0.0f},
+    { 0.5f, 0.5f,   0.5f,   0.0f, 1.0f,    0.0f,  1.0f,  0.0f}
   };
 
   GLuint indices[] = {
     0, 1, 3,
-    1, 2, 3
+    1, 2, 3,
+
+    4, 5, 7,
+    5, 6, 7,
+
+    8, 9, 10,
+    8, 10, 11,
+
+    12, 13, 14,
+    12, 14, 15,
+
+    16, 17, 18,
+    16, 18, 19,
+
+    20, 21, 22,
+    20, 22, 23
   };
 
   vertex_data_t ground_vertices[] = {
-    { 5.0f, -1.0f,  5.0f,     10.0f, 10.0f},
-    { 5.0f, -1.0f, -5.0f,     10.0f,  0.0f},
-    {-5.0f, -1.0f, -5.0f,      0.0f,  0.0f},
-    {-5.0f, -1.0f,  5.0f,      0.0f, 10.0f}
+    { 5.0f, -1.0f,  5.0f,     10.0f, 10.0f,    0.0f,  1.0f,  0.0f},
+    { 5.0f, -1.0f, -5.0f,     10.0f,  0.0f,    0.0f,  1.0f,  0.0f},
+    {-5.0f, -1.0f, -5.0f,      0.0f,  0.0f,    0.0f,  1.0f,  0.0f},
+    {-5.0f, -1.0f,  5.0f,      0.0f, 10.0f,    0.0f,  1.0f,  0.0f}
   };
 
   GLuint ground_indices[] = {
@@ -176,6 +217,7 @@ int main(int argc, char* argv[]) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   GLuint tex = upload_texture("me.jpg");
+  GLuint white_tex = upload_texture("pure_white.png");
 
   GLuint vbo;
   glGenBuffers(1, &vbo);
@@ -193,6 +235,8 @@ int main(int argc, char* argv[]) {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)(3 *  sizeof(GLfloat)));
   glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)(5 *  sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   glBindVertexArray(0);
@@ -215,6 +259,8 @@ int main(int argc, char* argv[]) {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)(3 *  sizeof(GLfloat)));
   glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_data_t), (GLvoid*)(5 *  sizeof(GLfloat)));
+  glEnableVertexAttribArray(2);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ground_ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ground_indices), ground_indices, GL_STATIC_DRAW);
   glBindVertexArray(0);
@@ -383,13 +429,24 @@ int main(int argc, char* argv[]) {
     GLint view_uniform_location = glGetUniformLocation(shader_program, "view");
     GLint model_uniform_location = glGetUniformLocation(shader_program, "model");
     GLint ambient_uniform_location = glGetUniformLocation(shader_program, "ambient_light");
+    GLint diffuse_uniform_location = glGetUniformLocation(shader_program, "diffuse_light_pos");
+    GLint diffcolor_uniform_location = glGetUniformLocation(shader_program, "diffuse_light_color");
+    GLint lighting_uniform_location = glGetUniformLocation(shader_program, "enable_lighting");
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(shader_program);
 
     glUniform1ui(time_uniform_location, SDL_GetTicks());
     glUniform3f(ambient_uniform_location,
+		0.1f,
+		0.1f,
+		0.1f);
+    glUniform3f(diffuse_uniform_location,
+		1.0f,
+		1.0f,
+		1.0f);
+    glUniform3f(diffcolor_uniform_location,
 		1.0f,
 		1.0f,
 		1.0f);
@@ -397,6 +454,7 @@ int main(int argc, char* argv[]) {
     set_projection_matrix(projection,
 			  1024.0f, 768.0f, M_PI_2,
 			  1.0f, 100.0f);
+    int enable_rotation = 1;
     GLfloat angle_deg = SDL_GetTicks() / 20.0f;
     GLfloat angle_rad = angle_deg / 180.0f * M_PI;
     set_camera_vectors(NULL,
@@ -415,6 +473,7 @@ int main(int argc, char* argv[]) {
 		       GL_TRUE,
 		       view);
 
+    glUniform1ui(lighting_uniform_location, 1);
     //ground
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, ground_tex);
@@ -434,23 +493,50 @@ int main(int argc, char* argv[]) {
 
 
     memcpy(model, model_base, sizeof(model_base));
-    model_rotation[5] = cos(-angle_rad);
-    model_rotation[6] = -sin(-angle_rad);
-    model_rotation[9] = sin(-angle_rad);
-    model_rotation[10] = cos(-angle_rad);
-    mat_mul4(model, model_rotation);
+    if(enable_rotation) {
+      model_rotation[5] = cos(-angle_rad);
+      model_rotation[6] = -sin(-angle_rad);
+      model_rotation[9] = sin(-angle_rad);
+      model_rotation[10] = cos(-angle_rad);
+      mat_mul4(model, model_rotation);
+    }
     glUniformMatrix4fv(model_uniform_location,
 		       1,
 		       GL_TRUE,
 		       model);
 
+    glUniform1ui(lighting_uniform_location, 1);
     //me
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, tex);
     glUniform1i(sampler_uniform_location, 0);
 
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLfloat), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+    memcpy(model, model_base, sizeof(model_base));
+    model[3] = 1.0f;
+    model[7] = 1.0f;
+    model[11] = 1.0f;
+    model[0] = 0.1f;
+    model[5] = 0.1f;
+    model[10] = 0.1f;
+    glUniformMatrix4fv(model_uniform_location,
+		       1,
+		       GL_TRUE,
+		       model);
+    glUniform1ui(lighting_uniform_location, 0);
+    //light
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, white_tex);
+    glUniform1i(sampler_uniform_location, 0);
+
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(GLfloat), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
