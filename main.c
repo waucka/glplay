@@ -325,6 +325,8 @@ int main(int argc, char* argv[]) {
   int moving_backward = 0;
   int moving_left = 0;
   int moving_right = 0;
+  int moving_up = 0;
+  int moving_down = 0;
 
   GLfloat yaw = 0;
   GLfloat pitch = 0;
@@ -341,11 +343,17 @@ int main(int argc, char* argv[]) {
 	case SDLK_q:
 	  done = 1;
 	  break;
-	case SDLK_SPACE:
+	case SDLK_e:
 	  input_grab = !input_grab;
 	  SDL_SetWindowGrab(main_window, input_grab);
 	  SDL_ShowCursor(!input_grab);
 	  SDL_SetRelativeMouseMode(input_grab);
+	  break;
+	case SDLK_SPACE:
+	  moving_up = 0;
+	  break;
+	case SDLK_z:
+	  moving_down = 0;
 	  break;
 	case SDLK_w:
 	  moving_forward = 0;
@@ -363,6 +371,12 @@ int main(int argc, char* argv[]) {
 	break;
       case SDL_KEYDOWN:
 	switch(ev.key.keysym.sym) {
+	case SDLK_SPACE:
+	  moving_up = 1;
+	  break;
+	case SDLK_z:
+	  moving_down = 1;
+	  break;
 	case SDLK_w:
 	  moving_forward = 1;
 	  break;
@@ -420,6 +434,16 @@ int main(int argc, char* argv[]) {
     }
     if(moving_left) {
       memcpy(velocity, camera_right, sizeof(velocity));
+      mul_vector3(velocity, -camera_speed);
+      add_vector3(camera_location, velocity);
+    }
+    if(moving_up) {
+      memcpy(velocity, camera_up, sizeof(velocity));
+      mul_vector3(velocity, camera_speed);
+      add_vector3(camera_location, velocity);
+    }
+    if(moving_down) {
+      memcpy(velocity, camera_up, sizeof(velocity));
       mul_vector3(velocity, -camera_speed);
       add_vector3(camera_location, velocity);
     }
