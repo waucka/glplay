@@ -146,11 +146,11 @@ int main(int argc, char* argv[]) {
 
   glUseProgram(shader_program);
 
-  GLfloat vertices[] = {
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 1.0f
+  vertex_data_t vertices[] = {
+    {0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f, 1.0f,   1.0f, 1.0f},
+    {0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f, 1.0f,   1.0f, 0.0f},
+    {-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f, 1.0f,   0.0f, 0.0f},
+    {-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 1.0f}
   };
 
   GLuint indices[] = {
@@ -158,11 +158,11 @@ int main(int argc, char* argv[]) {
     1, 2, 3
   };
 
-  GLfloat ground_vertices[] = {
-     5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f, 10.0f,
-     5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f,  0.0f,
-    -5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f,  0.0f,
-    -5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 10.0f
+  vertex_data_t ground_vertices[] = {
+    {5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f, 10.0f},
+    {5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,   10.0f,  0.0f},
+    {-5.0f, -1.0f, -5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f,  0.0f},
+    {-5.0f, -1.0f,  5.0f,   1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 10.0f}
   };
 
   GLuint ground_indices[] = {

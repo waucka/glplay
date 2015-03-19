@@ -9,4 +9,18 @@ char* slurp_file(const char* filename);
 int load_shader(const char* filename, GLint shader_type);
 GLuint upload_texture(const char* filename);
 
+typedef struct {
+  GLfloat x;
+  GLfloat y;
+  GLfloat z;
+
+  GLfloat r;
+  GLfloat g;
+  GLfloat b;
+  GLfloat a;
+
+  GLfloat s;
+  GLfloat t;
+} vertex_data_t;
+
 #endif
